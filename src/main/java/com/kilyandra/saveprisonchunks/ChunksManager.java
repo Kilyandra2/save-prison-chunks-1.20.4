@@ -58,7 +58,7 @@ public class ChunksManager {
         if (!Thread.currentThread().getName().startsWith("Netty Client IO")) return;
 
         executorService.submit(() -> FilesManager.saveChunkToFile(packet));
-        LOGGER.info("Chunk {} {} saved.", packet.getX(), packet.getZ());
+        //LOGGER.info("Chunk {} {} saved.", packet.getX(), packet.getZ());
     }
 
     public void checkTitle(String title) {
