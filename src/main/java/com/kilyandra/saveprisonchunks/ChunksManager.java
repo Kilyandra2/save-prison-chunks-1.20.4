@@ -9,14 +9,13 @@ import net.minecraft.network.protocol.game.ClientboundChunkBatchFinishedPacket;
 import net.minecraft.network.protocol.game.ClientboundChunkBatchStartPacket;
 import net.minecraft.network.protocol.game.ClientboundLevelChunkWithLightPacket;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class ChunksManager {
-    private static final Logger LOGGER = LoggerFactory.getLogger("save-prison-chunks");
+    private static final Logger LOGGER = SavePrisonChunksMod.LOGGER;
     private static final ExecutorService executorService = Executors.newSingleThreadExecutor();
     private boolean isPrison = false;
 

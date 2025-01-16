@@ -16,7 +16,7 @@
 	"environment": "*",
 	"entrypoints": {
 		"client": [
-			"com.kilyandra.saveprisonchunks.ChunkTestMod"
+			"com.kilyandra.saveprisonchunks.SavePrisonChunksMod"
 		]
 	},
 	"mixins": [

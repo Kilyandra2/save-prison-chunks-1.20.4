@@ -4,6 +4,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.network.FriendlyByteBuf;
 import io.netty.buffer.Unpooled;
 import net.minecraft.network.protocol.game.ClientboundLevelChunkWithLightPacket;
+import org.slf4j.Logger;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -12,6 +13,7 @@ import java.io.IOException;
 import java.util.Objects;
 
 public class FilesManager {
+    private static final Logger LOGGER = SavePrisonChunksMod.LOGGER;
     private static final String MOD_DIR = Minecraft.getInstance().gameDirectory.getAbsolutePath() + "/prison_chunks/";
 
     public static void saveChunkToFile(ClientboundLevelChunkWithLightPacket packet) {
@@ -40,7 +42,7 @@ public class FilesManager {
             return new FriendlyByteBuf(Unpooled.wrappedBuffer(bytes));
 
         } catch (IOException e) {
-            System.err.println("Ошибка при чтении файла: " + file.getAbsolutePath());
+            LOGGER.error("Ошибка при чтении файла: {} ", e.getMessage());
             return null;
         }
     }
@@ -52,7 +54,7 @@ public class FilesManager {
             fos.write(bytes);
 
         } catch (IOException e) {
-            System.err.println("Ошибка записи в файл: " + e.getMessage());
+            LOGGER.error("Ошибка записи в файл: {} ", e.getMessage());
 
         }
     }
@@ -69,7 +71,7 @@ public class FilesManager {
         File file = new File(MOD_DIR);
 
         if (!file.mkdirs() && !file.exists()) {
-            System.err.println("Не удалось создать директории: " + MOD_DIR);
+            LOGGER.error("Не удалось создать директории");
         }
     }
 }
