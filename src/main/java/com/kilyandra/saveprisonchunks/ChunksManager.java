@@ -1,18 +1,16 @@
 package com.kilyandra.saveprisonchunks;
 
-import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.networking.v1.PacketSender;
-import net.minecraft.client.multiplayer.ClientPacketListener;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.protocol.game.ClientboundChunkBatchFinishedPacket;
-import net.minecraft.network.protocol.game.ClientboundChunkBatchStartPacket;
-import net.minecraft.network.protocol.game.ClientboundLevelChunkWithLightPacket;
+import net.minecraft.network.protocol.game.*;
 import org.slf4j.Logger;
 
-import java.util.Objects;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ExecutorService;
+
 
 public class ChunksManager {
     private static final Logger LOGGER = SavePrisonChunksMod.LOGGER;
@@ -23,10 +21,10 @@ public class ChunksManager {
         ClientPlayConnectionEvents.JOIN.register(this::onConnect);
     }
 
-    private void onConnect(ClientPacketListener listener, PacketSender packetSender, Minecraft minecraft) {
-        if (!this.isPrison) return;
-
+    private void onConnect(ClientPacketListener listener, PacketSender sender, Minecraft minecraft) {
         minecraft.executeBlocking(() -> {
+            if (minecraft.getCurrentServer() == null || !minecraft.getCurrentServer().ip.endsWith("mineland.net") || !this.isPrison) return;
+
             FriendlyByteBuf[] chunks = FilesManager.loadChunks();
 
             LOGGER.info("Chunk input started...");
@@ -53,15 +51,24 @@ public class ChunksManager {
     }
 
     public void saveChunk(ClientboundLevelChunkWithLightPacket packet) {
-        if (!this.isPrison) return;
-
-        if (!Thread.currentThread().getName().startsWith("Netty Client IO")) return;
+        if (!this.isPrison || !onNettyThread()) return;
 
         executorService.submit(() -> FilesManager.saveChunkToFile(packet));
-        //LOGGER.info("Chunk {} {} saved.", packet.getX(), packet.getZ());
     }
 
-    public void checkTitle(String title) {
-        this.isPrison = Objects.equals(title, "PRISON");
+    public void checkScoreboardName(ClientboundSetObjectivePacket packet) {
+        if (!onNettyThread()) return;
+
+        String scoreboardName = packet.getDisplayName().getString();
+        if (scoreboardName.equals("lvl") || scoreboardName.equals("sidebar")) {
+            return;
+        }
+
+        this.isPrison = scoreboardName.equals("PRISON");
+    }
+
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
+    private boolean onNettyThread(){
+        return Thread.currentThread().getName().startsWith("Netty Client IO");
     }
 }

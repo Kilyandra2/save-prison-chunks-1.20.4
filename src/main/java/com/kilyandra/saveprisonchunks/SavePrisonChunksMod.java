@@ -4,8 +4,9 @@ import net.fabricmc.api.ClientModInitializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+
 public final class SavePrisonChunksMod implements ClientModInitializer {
-	public static final Logger LOGGER = LoggerFactory.getLogger("chunk-test");
+	public static final Logger LOGGER = LoggerFactory.getLogger("save-prison-chunks");
 	public static final ChunksManager MANAGER = new ChunksManager();
 
 	@Override

@@ -1,21 +1,21 @@
 package com.kilyandra.saveprisonchunks.mixin;
 
 import com.kilyandra.saveprisonchunks.SavePrisonChunksMod;
-import net.minecraft.network.protocol.game.ClientboundSetTitleTextPacket;
+
+import net.minecraft.network.protocol.game.*;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import net.minecraft.client.multiplayer.ClientPacketListener;
-import net.minecraft.network.protocol.game.ClientboundForgetLevelChunkPacket;
-import net.minecraft.network.protocol.game.ClientboundLevelChunkWithLightPacket;
+
 
 @Mixin(ClientPacketListener.class)
 public abstract class ClientPacketListenerMixin {
 
 	@Inject(method = "handleForgetLevelChunk", at = @At(value = "HEAD"), cancellable = true)
-	private void cancelForgetLevelChunk(ClientboundForgetLevelChunkPacket packet, CallbackInfo ci){
+	private void cancelForgetLevelChunk(ClientboundForgetLevelChunkPacket packet, CallbackInfo ci) {
 		ci.cancel();
 	}
 
@@ -24,9 +24,8 @@ public abstract class ClientPacketListenerMixin {
 		SavePrisonChunksMod.MANAGER.saveChunk(packet);
 	}
 
-	@Inject(method = "setTitleText", at = @At(value = "HEAD"))
-	private void getTitleText(ClientboundSetTitleTextPacket packet, CallbackInfo ci) {
-		SavePrisonChunksMod.MANAGER.checkTitle(packet.getText().getSiblings().get(0).getString());
+	@Inject(method = "handleAddObjective", at = @At(value = "HEAD"))
+	private void scoreboardTest(ClientboundSetObjectivePacket packet, CallbackInfo ci) {
+		SavePrisonChunksMod.MANAGER.checkScoreboardName(packet);
 	}
-
 }
